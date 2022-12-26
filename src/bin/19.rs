@@ -6,6 +6,8 @@ extern crate maplit;
 
 use std::{collections::HashMap, str::Lines};
 
+use itertools::Itertools;
+
 #[derive(Debug, enum_utils::FromStr, PartialEq, Eq, Hash)]
 #[enumeration(case_insensitive)]
 enum Item {
@@ -21,35 +23,30 @@ type Blueprint = HashMap<Item, Recipe>;
 
 fn parse_blueprint(lines: &mut Lines) -> Option<Blueprint> {
     let _ = scan_fmt!(lines.next()?, "Blueprint {}:", u32).unwrap();
-    let mut blueprint = hashmap! {};
+    let mut blueprint: Blueprint = hashmap! {};
 
     for _ in 0..4 {
-        let line = lines.next().unwrap();
-        println!("{line}");
-        match scan_fmt!(
-            line,
-            "  Each {/.*/} robot costs {d} {/.*/}.",
-            Item,
-            u32,
-            Item
-        ) {
-            Ok((robot, n, item)) => {
-                blueprint.insert(robot, hashmap! {item => n});
-            }
-            Err(_) => {
-                let (robot, n1, item1, n2, item2) = scan_fmt!(
-                    line,
-                    "  Each {} robot costs {d} {} and {d} {}.",
-                    Item,
-                    u32,
-                    Item,
-                    u32,
-                    Item
-                )
-                .unwrap();
+        let line = lines
+            .next()
+            .unwrap()
+            .strip_suffix(".")
+            .unwrap()
+            .split_whitespace()
+            .collect_vec();
 
-                blueprint.insert(robot, hashmap! {item1 => n1, item2 => n2});
-            }
+        if line.len() == 6 {
+            blueprint.insert(
+                line[1].parse().unwrap(),
+                hashmap! { line[5].parse().unwrap() => line[4].parse().unwrap() },
+            );
+        } else {
+            blueprint.insert(
+                line[1].parse().unwrap(),
+                hashmap! {
+                    line[5].parse().unwrap() => line[4].parse().unwrap(),
+                    line[8].parse().unwrap() => line[7].parse().unwrap(),
+                },
+            );
         }
     }
 
@@ -87,24 +84,6 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn test() {
-        let x = "Ore".parse::<Item>();
-
-        println!("{x:?}");
-
-        let (a, b, c) = scan_fmt!(
-            "  Each ore robot costs 4 ore.",
-            "  Each {/.*/} robot costs {d} {/.*/}.",
-            Item,
-            u32,
-            Item
-        )
-        .unwrap();
-
-        println!("{a:?}, {b:?}, {c:?}");
-    }
 
     #[test]
     fn test_part_one() {

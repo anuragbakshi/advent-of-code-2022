@@ -1,36 +1,36 @@
-#[macro_use]
-extern crate scan_fmt;
+// #[macro_use]
+// extern crate scan_fmt;
 
-struct Pos {
-    x: i32,
-    y: i32,
-}
+// struct Pos {
+//     x: i32,
+//     y: i32,
+// }
 
-struct Reading {
-    sensor: Pos,
-    beacon: Pos,
-}
+// struct Reading {
+//     sensor: Pos,
+//     beacon: Pos,
+// }
 
-impl Reading {
-    fn area_covered(&self) -> i32 {
-        let dx = self.sensor.x.abs_diff(self.beacon.x);
-        let dy = self.sensor.y.abs_diff(self.beacon.y);
-    }
-}
+// impl Reading {
+//     fn area_covered(&self) -> i32 {
+//         let dx = self.sensor.x.abs_diff(self.beacon.x);
+//         let dy = self.sensor.y.abs_diff(self.beacon.y);
+//     }
+// }
 
-fn parse_input(input: &str) {
-    input.lines().map(|l| {
-        let (sx, sy, bx, by) = scan_fmt!(
-            l,
-            "Sensor at x={d}, y={d}: closest beacon is at x={d}, y={d}",
-            i32,
-            i32,
-            i32,
-            i32
-        )
-        .unwrap();
-    });
-}
+// fn parse_input(input: &str) {
+//     input.lines().map(|l| {
+//         let (sx, sy, bx, by) = scan_fmt!(
+//             l,
+//             "Sensor at x={d}, y={d}: closest beacon is at x={d}, y={d}",
+//             i32,
+//             i32,
+//             i32,
+//             i32
+//         )
+//         .unwrap();
+//     });
+// }
 
 pub fn part_one(input: &str) -> Option<u32> {
     None
