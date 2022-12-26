@@ -106,19 +106,40 @@ impl Equation<'_> {
     }
 
     fn invert<'a>(&'a self, equal_to: &'a str) -> (&'a str, Equation<'a>) {
+        // a = 1 + b
+        // a = 1 * b
+        // a = 1 - b
+        // a = 1 / b
+
+        // a - 1 = b
+        // a / 1 = b
+        // b = 1 - a
+        // b = 1 / a
+
+        // a = b + 1
+        // a = b * 1
+        // a = b - 1
+        // a = b / 1
+
+        // a - 1 = b
+        // a / 1 = b
+        // a + 1 = b
+        // a * 1 = b
+
+        use Operator::*;
+        use Value::*;
         match self {
-            Self::Formula(Value::Const(c), op, Value::Monkey(m)) => {
-                let lhs = Value::Const(*c);
-                let op = op.invert();
-                let rhs = Value::Monkey(equal_to);
-                (m, Self::Formula(lhs, op, rhs))
+            &Equation::Formula(Const(c), op, Monkey(m)) => {
+                let inv = match op {
+                    Add | Mul => Equation::Formula(Monkey(equal_to), op.invert(), Const(c)),
+                    Sub | Div => Equation::Formula(Const(c), op, Monkey(equal_to)),
+                };
+                (m, inv)
             }
-            Self::Formula(Value::Monkey(m), op, Value::Const(c)) => {
-                let lhs = Value::Monkey(equal_to);
-                let op = op.invert();
-                let rhs = Value::Const(*c);
-                (m, Self::Formula(lhs, op, rhs))
-            }
+            &Equation::Formula(Monkey(m), op, Const(c)) => (
+                m,
+                Equation::Formula(Monkey(equal_to), op.invert(), Const(c)),
+            ),
             _ => panic!(),
         }
     }
@@ -168,9 +189,6 @@ pub fn part_one(input: &str) -> Option<i64> {
     let mut monkeys = parse_input(input);
 
     loop {
-        // print_monkeys(&monkeys);
-        // println!();
-
         if let Equation::Const(ans) = monkeys["root"] {
             return Some(ans);
         }
@@ -198,9 +216,6 @@ pub fn part_two(input: &str) -> Option<i64> {
     monkeys.remove("humn");
 
     loop {
-        // print_monkeys(&monkeys);
-        // println!();
-
         let next_const = monkeys.iter().find_map(|(name, eq)| match eq {
             Equation::Const(v) => Some((name, v)),
             _ => None,
@@ -220,15 +235,31 @@ pub fn part_two(input: &str) -> Option<i64> {
         }
     }
 
-    let (value, solve_for) = match monkeys["root"] {
-        Equation::Formula(Value::Const(c), op, Value::Monkey(m))
-        | Equation::Formula(Value::Monkey(m), op, Value::Const(c)) => (c, m),
+    let (mut value, solve_for) = match monkeys["root"] {
+        Equation::Formula(Value::Const(c), _, Value::Monkey(m))
+        | Equation::Formula(Value::Monkey(m), _, Value::Const(c)) => (c, m),
         _ => panic!(),
     };
 
-    println!("{value} {solve_for}");
+    let mut solve_for = solve_for.to_owned();
 
-    None
+    loop {
+        if solve_for == "humn" {
+            return Some(value);
+        }
+
+        let eq = monkeys.remove(solve_for.as_str()).unwrap();
+        let (unknown, mut eq) = eq.invert(solve_for.as_str());
+        eq.maybe_simplify((solve_for.as_str(), value));
+
+        match eq {
+            Equation::Const(c) => {
+                value = c;
+                solve_for = unknown.to_owned();
+            }
+            _ => panic!(),
+        }
+    }
 }
 
 fn main() {
@@ -250,6 +281,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let input = advent_of_code::read_file("examples", 21);
-        assert_eq!(part_two(&input), None);
+        assert_eq!(part_two(&input), Some(301));
     }
 }
