@@ -1,53 +1,113 @@
-\--- Day 21: Monkey Math ---
+\--- Day 25: Full of Hot Air ---
 ----------
 
-The [monkeys](11) are back! You're worried they're going to try to steal your stuff again, but it seems like they're just holding their ground and making various monkey noises at you.
+As the expedition finally reaches the extraction point, several large [hot air balloons](https://en.wikipedia.org/wiki/Hot_air_balloon) drift down to meet you. Crews quickly start unloading the equipment the balloons brought: many hot air balloon kits, some fuel tanks, and a *fuel heating machine*.
 
-Eventually, one of the elephants realizes you don't speak monkey and comes over to interpret. As it turns out, they overheard you talking about trying to find the grove; they can show you a shortcut if you answer their *riddle*.
+The fuel heating machine is a new addition to the process. When this mountain was a volcano, the ambient temperature was more reasonable; now, it's so cold that the fuel won't work at all without being warmed up first.
 
-Each monkey is given a *job*: either to *yell a specific number* or to *yell the result of a math operation*. All of the number-yelling monkeys know their number from the start; however, the math operation monkeys need to wait for two other monkeys to yell a number, and those two other monkeys might *also* be waiting on other monkeys.
+The Elves, seemingly in an attempt to make the new machine feel welcome, have already attached a pair of [googly eyes](https://en.wikipedia.org/wiki/Googly_eyes) and started calling it "Bob".
 
-Your job is to *work out the number the monkey named `root` will yell* before the monkeys figure it out themselves.
+To heat the fuel, Bob needs to know the total amount of fuel that will be processed ahead of time so it can correctly calibrate heat output and flow rate. This amount is simply the *sum* of the fuel requirements of all of the hot air balloons, and those fuel requirements are even listed clearly on the side of each hot air balloon's burner.
 
-For example:
+You assume the Elves will have no trouble adding up some numbers and are about to go back to figuring out which balloon is yours when you get a tap on the shoulder. Apparently, the fuel requirements use numbers written in a format the Elves don't recognize; predictably, they'd like your help deciphering them.
 
-```
-root: pppw + sjmn
-dbpl: 5
-cczh: sllz + lgvd
-zczc: 2
-ptdq: humn - dvpt
-dvpt: 3
-lfqf: 4
-humn: 5
-ljgn: 2
-sjmn: drzm * dbpl
-sllz: 4
-pppw: cczh / lfqf
-lgvd: ljgn * ptdq
-drzm: hmdt - zczc
-hmdt: 32
+You make a list of all of the fuel requirements (your puzzle input), but you don't recognize the number format either. For example:
 
 ```
+1=-0-2
+12111
+2=0=
+21
+2=01
+111
+20012
+112
+1=-1=
+1-12
+12
+1=
+122
 
-Each line contains the name of a monkey, a colon, and then the job of that monkey:
+```
 
-* A lone number means the monkey's job is simply to yell that number.
-* A job like `aaaa + bbbb` means the monkey waits for monkeys `aaaa` and `bbbb` to yell each of their numbers; the monkey then yells the sum of those two numbers.
-* `aaaa - bbbb` means the monkey yells `aaaa`'s number minus `bbbb`'s number.
-* Job `aaaa * bbbb` will yell `aaaa`'s number multiplied by `bbbb`'s number.
-* Job `aaaa / bbbb` will yell `aaaa`'s number divided by `bbbb`'s number.
+Fortunately, Bob is labeled with a support phone number. Not to be deterred, you call and ask for help.
 
-So, in the above example, monkey `drzm` has to wait for monkeys `hmdt` and `zczc` to yell their numbers. Fortunately, both `hmdt` and `zczc` have jobs that involve simply yelling a single number, so they do this immediately: `32` and `2`. Monkey `drzm` can then yell its number by finding `32` minus `2`: `*30*`.
+"That's right, just supply the fuel amount to the-- oh, for more than one burner? No problem, you just need to add together our Special Numeral-Analogue Fuel Units. Patent pending! They're way better than normal numbers for--"
 
-Then, monkey `sjmn` has one of its numbers (`30`, from monkey `drzm`), and already has its other number, `5`, from `dbpl`. This allows it to yell its own number by finding `30` multiplied by `5`: `*150*`.
+You mention that it's quite cold up here and ask if they can skip ahead.
 
-This process continues until `root` yells a number: `*152*`.
+"Okay, our Special Numeral-Analogue Fuel Units - SNAFU for short - are sort of like normal numbers. You know how starting on the right, normal numbers have a ones place, a tens place, a hundreds place, and so on, where the digit in each place tells you how many of that value you have?"
 
-However, your actual situation involves considerably more monkeys. *What number will the monkey named `root` yell?*
+"SNAFU works the same way, except it uses powers of five instead of ten. Starting from the right, you have a ones place, a fives place, a twenty-fives place, a one-hundred-and-twenty-fives place, and so on. It's that easy!"
 
-To begin, [get your puzzle input](21/input).
+You ask why some of the digits look like `-` or `=` instead of "digits".
+
+"You know, I never did ask the engineers why they did that. Instead of using digits four through zero, the digits are `*2*`, `*1*`, `*0*`, *minus* (written `-`), and *double-minus* (written `=`). Minus is worth -1, and double-minus is worth -2."
+
+"So, because ten (in normal numbers) is two fives and no ones, in SNAFU it is written `20`. Since eight (in normal numbers) is two fives minus two ones, it is written `2=`."
+
+"You can do it the other direction, too. Say you have the SNAFU number `2=-01`. That's `2` in the 625s place, `=` (double-minus) in the 125s place, `-` (minus) in the 25s place, `0` in the 5s place, and `1` in the 1s place. (2 times 625) plus (-2 times 125) plus (-1 times 25) plus (0 times 5) plus (1 times 1). That's 1250 plus -250 plus -25 plus 0 plus 1. *976*!"
+
+"I see here that you're connected via our premium uplink service, so I'll transmit our handy SNAFU brochure to you now. Did you need anything else?"
+
+You ask if the fuel will even work in these temperatures.
+
+"Wait, it's *how* cold? There's no *way* the fuel - or *any* fuel - would work in those conditions! There are only a few places in the-- where did you say you are again?"
+
+Just then, you notice one of the Elves pour a few drops from a snowflake-shaped container into one of the fuel tanks, thank the support representative for their time, and disconnect the call.
+
+The SNAFU brochure contains a few more examples of decimal ("normal") numbers and their SNAFU counterparts:
+
+```
+  Decimal          SNAFU
+        1              1
+        2              2
+        3             1=
+        4             1-
+        5             10
+        6             11
+        7             12
+        8             2=
+        9             2-
+       10             20
+       15            1=0
+       20            1-0
+     2022         1=11-2
+    12345        1-0---0
+314159265  1121-1110-1=0
+
+```
+
+Based on this process, the SNAFU numbers in the example above can be converted to decimal numbers as follows:
+
+```
+ SNAFU  Decimal
+1=-0-2     1747
+ 12111      906
+  2=0=      198
+    21       11
+  2=01      201
+   111       31
+ 20012     1257
+   112       32
+ 1=-1=      353
+  1-12      107
+    12        7
+    1=        3
+   122       37
+
+```
+
+In decimal, the sum of these numbers is `4890`.
+
+As you go to input this number on Bob's console, you discover that some buttons you expected are missing. Instead, you are met with buttons labeled `=`, `-`, `0`, `1`, and `2`. Bob needs the input value expressed as a SNAFU number, not in decimal.
+
+Reversing the process, you can determine that for the decimal number `4890`, the SNAFU number you need to supply to Bob's console is `*2=-1=0*`.
+
+The Elves are starting to get cold. *What SNAFU number do you supply to Bob's console?*
+
+To begin, [get your puzzle input](25/input).
 
 Answer:
 
-You can also [Shareon [Twitter](https://twitter.com/intent/tweet?text=%22Monkey+Math%22+%2D+Day+21+%2D+Advent+of+Code+2022&url=https%3A%2F%2Fadventofcode%2Ecom%2F2022%2Fday%2F21&related=ericwastl&hashtags=AdventOfCode) [Mastodon](javascript:void(0);)] this puzzle.
+You can also [Shareon [Twitter](https://twitter.com/intent/tweet?text=%22Full+of+Hot+Air%22+%2D+Day+25+%2D+Advent+of+Code+2022&url=https%3A%2F%2Fadventofcode%2Ecom%2F2022%2Fday%2F25&related=ericwastl&hashtags=AdventOfCode) [Mastodon](javascript:void(0);)] this puzzle.
